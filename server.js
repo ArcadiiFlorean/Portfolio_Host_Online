@@ -22,15 +22,14 @@ app.post("/create-payment-intent", async (req, res) => {
     }
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount,
-      currency: "ron",
-      description: packageName || "Package purchase",
-      receipt_email: email || undefined, // Email e optional
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
-
+  amount: amount,
+  currency: 'gbp',  // ⭐ Schimbă din 'ron' în 'gbp'
+  description: packageName || 'Package purchase',
+  receipt_email: email || undefined,
+  automatic_payment_methods: {
+    enabled: true,
+  },
+});
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error("Stripe error:", error);
