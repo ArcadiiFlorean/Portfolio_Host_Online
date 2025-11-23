@@ -15,36 +15,25 @@ app.get("/", (req, res) => {
 
 app.post("/create-payment-intent", async (req, res) => {
   try {
-    const { amount, email, description } = req.body;
+    const { amount, packageName, email } = req.body;
 
-    if (!amount || !email) {
-      return res.status(400).json({ error: "Amount and email are required" });
-    }
-
-    if (amount < 50) {
-      return res.status(400).json({ error: "Minimum amount is £0.50" });
+    if (!amount) {
+      return res.status(400).json({ error: "Amount is required" });
     }
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount),
-      currency: "gbp",
-      receipt_email: email,
-      description: description || "Payment",
-      metadata: {
-        email: email,
-        description: description || "Payment",
-      },
+      amount: amount,
+      currency: "ron",
+      description: packageName || "Package purchase",
+      receipt_email: email || undefined, // Email e optional
       automatic_payment_methods: {
         enabled: true,
       },
     });
 
-    res.json({
-      clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id,
-    });
+    res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
-    console.error("Error creating payment intent:", error);
+    console.error("Stripe error:", error);
     res.status(500).json({ error: error.message });
   }
 });
